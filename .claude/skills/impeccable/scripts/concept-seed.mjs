@@ -60,14 +60,17 @@
  * they roll from the full approved pool.
  *
  * Challenger data resolves in order: a local catalog directory (the private
- * service repo, evals, and tests set IMPECCABLE_CATALOG_DIR), then the roll
- * API at impeccable.style, then a degraded assignment-only seed when both are
- * unavailable. --chosen sends the anonymous choice ping for API-dealt rolls;
- * DO_NOT_TRACK or IMPECCABLE_NO_TELEMETRY disables it.
+ * service repo, evals, and tests set IMPECCABLE_CATALOG_DIR), then (only when
+ * IMPECCABLE_ALLOW_NETWORK=1) the roll API at impeccable.style, then the local
+ * assignment-only seed. jflamb fork: the network is OFF by default, so a
+ * normal run is fully offline and uses the assignment-only seed. --chosen
+ * sends the anonymous choice ping only when IMPECCABLE_ALLOW_NETWORK=1 and
+ * neither DO_NOT_TRACK nor IMPECCABLE_NO_TELEMETRY is set.
  *
  * Env vars:
  *   IMPECCABLE_CONCEPT_SEED — same as --from; for reproducible eval runs.
  *   IMPECCABLE_CATALOG_DIR  — directory holding the four catalog JSON files.
+ *   IMPECCABLE_ALLOW_NETWORK — set to 1 to allow the roll API and choice ping (default off).
  *   IMPECCABLE_API_URL      — roll API base (default https://impeccable.style/api).
  *   IMPECCABLE_NO_TELEMETRY — disables the choice ping (DO_NOT_TRACK also honored).
  */
@@ -101,9 +104,32 @@ const API_TIMEOUT_MS = Number(process.env.IMPECCABLE_API_TIMEOUT || 4000);
 // All API calls in one seed run share a single deadline so an unreachable
 // network degrades after one timeout total, never one timeout per call.
 let apiDeadline = null;
+// jflamb fork: every network call in this script is opt-in.
+export function networkAllowed() {
+  return /^(1|true|yes|on)$/i.test(String(process.env.IMPECCABLE_ALLOW_NETWORK || '').trim());
+}
 function apiBudgetMs() {
   if (apiDeadline === null) apiDeadline = Date.now() + API_TIMEOUT_MS;
   return Math.max(0, apiDeadline - Date.now());
+}
+
+function degradedNotice() {
+  if (!networkAllowed()) {
+    return `No challengers this run: the roll API is off by default in this install
+(offline mode) and no local catalog exists. This is the expected path, not a
+failure: do not rerun with network access or ask to. Proceed with your own
+grounded candidates; the assignment above still applies at full strength.
+Mention once, in a short clause, that the seed ran offline without
+challenger cards. When a browser can open, present the direction on the
+decision page (serve-question.mjs, text-only card); the structured question
+tool remains the no-browser fallback.`;
+  }
+  return `No challengers this run: the roll service was unreachable and no local
+catalog exists. Do not retry; proceed with the grounded candidates alone; the
+assignment above still applies at full strength. Tell the user in one short
+clause that the roll ran without challengers. When a browser can open, present
+the direction on the decision page (serve-question.mjs, text-only card); the
+structured question tool remains the no-browser fallback.`;
 }
 
 const localStates = new Map();
@@ -143,6 +169,7 @@ function requireLocalConcepts() {
 }
 
 async function fetchRoll({ scope, key, mode, grain, platform, reroll }) {
+  if (!networkAllowed()) return null;
   const params = new URLSearchParams({ scope, key, reroll: String(reroll) });
   if (mode) params.set('mode', mode);
   if (grain) params.set('grain', grain);
@@ -175,7 +202,7 @@ function telemetryDisabled() {
 // Anonymous choice ping: records only that a dealt world was selected.
 // Fire-and-forget; never fails the caller.
 export async function pingChosen({ chosenId, key, scope, mode }) {
-  if (telemetryDisabled() || !chosenId) return false;
+  if (!networkAllowed() || telemetryDisabled() || !chosenId) return false;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), apiBudgetMs());
   try {
@@ -404,24 +431,7 @@ ASSIGNED INDEX: ${buildIndex}
   ${promotedInstruction}
   The assignment exists to refuse the model's ranking rut, never to outrank
   the user or the brief. Never expose assignment metadata in user-facing labels.
-No challengers this run: the roll service was unreachable and no local
-catalog exists. A sandboxed shell without network egress is the most common
-cause; before accepting degradation, rerun this command once through the
-harness's network-enabled or escalated command tool. When that rerun needs
-an approval, state exactly what the approver must know: this script's only
-network contact is one GET to https://impeccable.style/api/roll whose query
-carries scope, mode, an eight-hex seed key, and a re-roll counter; no
-project files, prompts, code, or conversation context are transmitted, and
-nothing is written. An approval request naming that URL and payload judges
-the real action; a bare "run with network" invites rejection for contacting
-an unspecified domain. If the rerun is still refused, proceed with the
-grounded candidates alone; the assignment above still applies at full
-strength. Tell the user plainly that this roll
-ran degraded, with no challengers and no quality-bar boards; do not present
-the outcome as a full roll. A degraded roll changes the cards, not the
-channel: when a browser can open, present the direction on the decision page
-(serve-question.mjs, text-only card); the structured question tool remains
-the no-browser fallback.
+${degradedNotice()}
 ${authorityInstruction}
 A user- or brief-pinned decision beats the roll, always.
 ASSIGNED INDEX (restated for truncated readers): ${buildIndex}. Build candidate

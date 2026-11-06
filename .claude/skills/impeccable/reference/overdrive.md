@@ -14,14 +14,14 @@ Push an interface past conventional limits. This isn't just about visual effects
 This command has the highest potential to misfire. Do NOT jump straight into implementation. You MUST:
 
 1. **Think through 2-3 different directions**: consider different techniques, levels of ambition, and aesthetic approaches. For each direction, briefly describe what the result would look and feel like.
-2. **STOP and call the AskUserQuestion tool to clarify.** to present these directions and get the user's pick before writing any code. Explain trade-offs (browser support, performance cost, complexity).
+2. **Present these directions with the AskUserQuestion tool** and get the user's pick before writing any code. Explain trade-offs (browser support, performance cost, complexity).
 3. Only proceed with the direction the user confirms.
 
 Skipping this step risks building something embarrassing that needs to be thrown away.
 
 ### Iterate with Browser Automation
 
-Technically ambitious effects almost never work on the first try. You MUST actively use browser automation tools to preview your work, visually verify the result, and iterate. Do not assume the effect looks right, check it. Expect multiple rounds of refinement. The gap between "technically works" and "looks extraordinary" is closed through visual iteration, not code alone.
+Technically ambitious effects almost never work on the first try. Use browser automation tools to preview your work and visually verify the result; do not assume the effect looks right, check it. Iteration stays inside SKILL.md's two-round inspection cap: one batched inspection round, one batch of fixes, at most one confirming round, then stop.
 
 ---
 

@@ -21,7 +21,7 @@ Analyze what makes the design feel complex or cluttered:
    - What can be removed, hidden, or combined?
    - What's the 20% that delivers 80% of value?
 
-If any of these are unclear from the codebase, STOP and call the AskUserQuestion tool to clarify.
+If any of these are unclear from the codebase, ask the user with the AskUserQuestion tool before changing anything.
 
 **CRITICAL**: Simplicity is not about removing features. It's about removing obstacles between users and their goals. Every element should justify its existence.
 
@@ -42,7 +42,7 @@ Systematically remove complexity across these dimensions:
 
 ### Information Architecture
 - **Reduce scope**: Remove secondary actions, optional features, redundant information
-- **Progressive disclosure**: Hide complexity behind clear entry points (accordions, modals, step-through flows)
+- **Progressive disclosure**: Hide complexity behind clear entry points (accordions, disclosure panels, step-through flows); a modal only when the task needs interruption or protected focus
 - **Combine related actions**: Merge similar buttons, consolidate forms, group related content
 - **Clear hierarchy**: ONE primary action, few secondary actions, everything else tertiary or hidden
 - **Remove redundancy**: If it's said elsewhere, don't repeat it here
@@ -65,7 +65,7 @@ Systematically remove complexity across these dimensions:
 ### Interaction Simplification
 - **Reduce choices**: Fewer buttons, fewer options, clearer path forward (paradox of choice is real)
 - **Smart defaults**: Make common choices automatic, only ask when necessary
-- **Inline actions**: Replace modal flows with inline editing where possible
+- **Inline actions**: Replace modal flows with inline editing unless the task needs interruption or protected focus (the one modal rule, shared with craft-floor.md)
 - **Remove steps**: Can the flow lose a step?
 - **Clear next action**: ONE obvious next action, not five competing ones
 

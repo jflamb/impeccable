@@ -11,7 +11,7 @@ Product UI's failure mode isn't flatness, it's strangeness without purpose: over
 ## Typography
 
 - **One family is often right.** Product UIs don't need display/body pairing. A well-tuned sans carries headings, buttons, labels, body, data.
-- **Fixed rem scale, not fluid.** Clamp-sized headings don't serve product UI. Users view at consistent DPI, and a fluid h1 that shrinks in a sidebar looks worse, not better.
+- **Fixed rem scale, not fluid.** This is the rule for app and Operate screens; fluid `clamp()` sizing is allowed only on Persuade pages. Clamp-sized headings don't serve product UI. Users view at consistent DPI, and a fluid h1 that shrinks in a sidebar looks worse, not better.
 - **Tighter scale ratio.** 1.125–1.2 between steps is typical. More type elements here than on brand surfaces; exaggerated contrast creates noise.
 - **Line length still applies for prose** (65–75ch). Data and compact UI can run denser; tables at 120ch+ are fine.
 

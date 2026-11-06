@@ -25,7 +25,7 @@ Page scaffolds:
 - The hero-metric template: big number, small label, supporting stats, accent.
 - A kicker or eyebrow above a heading. This one is a ban, not a default: no brief earns it back. The heading carries its own weight; delete the label and let the heading speak.
 - Section numbers (01 / 02 / 03) unless the sequence itself carries information the reader needs.
-- A modal for a task that needs neither interruption nor protected focus.
+- A modal for a task that needs neither interruption nor protected focus. That is the one modal rule: use a modal only when the task needs interruption or protected focus (a blocking decision, a destructive confirmation); otherwise go inline or use disclosure.
 
 Surface habits:
 

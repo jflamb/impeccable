@@ -28,7 +28,7 @@ Analyze what makes the design feel too intense:
    - What's working? (Don't throw away good ideas)
    - What's the core message? (Preserve what matters)
 
-If any of these are unclear from the codebase, STOP and call the AskUserQuestion tool to clarify.
+If any of these are unclear from the codebase, ask the user with the AskUserQuestion tool before changing anything.
 
 **CRITICAL**: "Quieter" doesn't mean boring or generic. It means refined and easier on the eyes. Think luxury, not laziness.
 
@@ -51,7 +51,7 @@ Systematically reduce intensity across these dimensions:
 - **Reduce saturation**: Shift from fully saturated to 70-85% saturation
 - **Soften palette**: Replace bright colors with muted tones
 - **Reduce color variety**: Use fewer colors more thoughtfully
-- **Neutral dominance**: Let neutrals do more work, use color as accent (10% rule)
+- **Neutral dominance**: Let neutrals do more work and use color as accent, at the dosage the brief and the committed color strategy set (no fixed percentage rule; see colorize.md)
 - **Gentler contrasts**: High contrast only where it matters most
 - **Tinted grays**: Use warm or cool tinted grays instead of pure gray. Adds depth without loudness
 - **Never gray on color**: If you have gray text on a colored background, use a darker shade of that color or transparency instead

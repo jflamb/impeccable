@@ -16,6 +16,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
 import { basename, join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { homedir } from 'node:os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -71,6 +72,11 @@ function findHarnessDirs(projectRoot) {
     if (existsSync(impeccableDir) || existsSync(join(skillsDir, 'i-impeccable'))) {
       dirs.push(skillsDir);
     }
+  }
+  // jflamb fork: the skill is installed at user level, so pin beside it there.
+  const userSkillsDir = join(homedir(), '.claude', 'skills');
+  if (existsSync(join(userSkillsDir, 'impeccable')) && !dirs.includes(userSkillsDir)) {
+    dirs.push(userSkillsDir);
   }
   return dirs;
 }

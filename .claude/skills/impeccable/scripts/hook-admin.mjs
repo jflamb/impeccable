@@ -22,7 +22,9 @@
  */
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { IMPECCABLE_COMMAND } from './lib/provider.mjs';
 
 import {
@@ -68,10 +70,22 @@ function stopManifestEntry(command) {
   };
 }
 
+// jflamb fork: the skill is installed at user level (~/.claude/skills/impeccable),
+// not inside each project, so the Claude hook points at the skill's own base
+// directory by absolute path. Prefer the stable ~/.claude path (the install is a
+// symlink into the git clone); fall back to wherever this script actually lives.
+const USER_SKILL_DIR = (() => {
+  const userLevel = path.join(os.homedir(), '.claude', 'skills', 'impeccable');
+  if (fs.existsSync(path.join(userLevel, 'scripts', 'hook.mjs'))) return userLevel;
+  return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+})();
+const CLAUDE_HOOK_COMMAND = `node "${path.join(USER_SKILL_DIR, 'scripts', 'hook.mjs')}"`;
+
 const HOOK_MANIFEST_TARGETS = [
   {
     provider: '.claude',
     skillRel: '.claude/skills/impeccable',
+    skillAbs: USER_SKILL_DIR,
     destRel: '.claude/settings.local.json',
     sharedDestRel: '.claude/settings.json',
     manifest: () => ({
@@ -83,14 +97,14 @@ const HOOK_MANIFEST_TARGETS = [
             hooks: [
               {
                 type: 'command',
-                command: 'node "${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs"',
+                command: CLAUDE_HOOK_COMMAND,
                 timeout: TIMEOUT_SECONDS,
                 statusMessage: STATUS_MESSAGE,
               },
             ],
           },
         ],
-        Stop: [stopManifestEntry('node "${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs"')],
+        Stop: [stopManifestEntry(CLAUDE_HOOK_COMMAND)],
       },
     }),
   },
@@ -393,7 +407,9 @@ function setEnabled(cwd, value) {
 function repairHookManifests(cwd) {
   const result = { written: [], already: [], backups: [] };
   for (const target of HOOK_MANIFEST_TARGETS) {
-    if (!fs.existsSync(path.join(cwd, target.skillRel))) continue;
+    const skillPresent = fs.existsSync(path.join(cwd, target.skillRel))
+      || (target.skillAbs && fs.existsSync(target.skillAbs));
+    if (!skillPresent) continue;
     const dest = path.join(cwd, target.destRel);
     const sharedDest = target.sharedDestRel ? path.join(cwd, target.sharedDestRel) : null;
 

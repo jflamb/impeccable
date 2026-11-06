@@ -2,7 +2,7 @@ Run systematic **technical** quality checks and generate a comprehensive report.
 
 This is a code-level audit, not a design critique. Check what's measurable and verifiable in the implementation.
 
-**Web only.** Native platforms (`ios` / `android` / `adaptive`) route to [audit.native.md](audit.native.md) instead; if the project is native, switch to it now.
+**Web only.** This fork ships no native audit; for an `ios` / `android` / `adaptive` project, audit from source against the platform's own guidelines and skip the browser and detector steps.
 
 ## Diagnostic Scan
 
